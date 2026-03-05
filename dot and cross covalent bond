@@ -1,0 +1,844 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Covalent Bonding — Dot &amp; Cross Assessment</title>
+<style>
+:root {
+  --bg:     #f0ece4;
+  --paper:  #faf8f3;
+  --ink:    #1c1917;
+  --rule:   #d4ccbb;
+  --soft:   #e8e2d6;
+  --dot:    #d4860a;
+  --dotd:   #8b5500;
+  --cross:  #2d5fb5;
+  --crossd: #1a3d8a;
+  --green:  #2d8a4e;
+  --red:    #c0392b;
+  --amber:  #b07d00;
+  --grey:   #666;
+}
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  background: var(--bg);
+  font-family: 'Segoe UI', Helvetica, Arial, sans-serif;
+  color: var(--ink);
+  min-height: 100vh;
+  background-image:
+    repeating-linear-gradient(0deg, transparent, transparent 27px, rgba(180,170,155,0.14) 28px),
+    repeating-linear-gradient(90deg, transparent, transparent 27px, rgba(180,170,155,0.07) 28px);
+}
+
+/* Header */
+.hdr { background: var(--ink); color: #f0ece4; padding: 14px 20px 10px; text-align: center; }
+.hdr h1 { font-family: Georgia, serif; font-size: clamp(1rem, 3.5vw, 1.6rem); font-weight: 700; }
+.hdr h1 em { color: #d4860a; font-style: normal; }
+.hdr p  { font-size: 0.76rem; opacity: 0.5; margin-top: 3px; }
+
+/* Tabs */
+.tabs { display: flex; background: var(--ink); padding: 0 12px; border-bottom: 3px solid var(--rule); overflow-x: auto; }
+.tab  {
+  font-family: Georgia, serif; font-size: 0.83rem; font-weight: 700;
+  padding: 8px 17px; border: none; background: transparent;
+  color: rgba(240,236,228,0.38); cursor: pointer;
+  border-bottom: 3px solid transparent; margin-bottom: -3px; white-space: nowrap;
+}
+.tab:hover  { color: rgba(240,236,228,0.75); }
+.tab.active { color: #d4860a; border-bottom-color: #d4860a; }
+.tab.done   { color: #3a8a3a; border-bottom-color: #3a8a3a; }
+.tab.done::after { content: ' \2713'; font-size: 0.68rem; }
+
+/* Tracker */
+.tracker { display: flex; align-items: center; max-width: 800px; margin: 0 auto; padding: 10px 16px 6px; overflow-x: auto; }
+.tn { display: flex; flex-direction: column; align-items: center; gap: 3px; flex: 1; min-width: 58px; position: relative; }
+.tn::after { content: ''; position: absolute; top: 9px; left: 50%; width: 100%; height: 2px; background: var(--rule); z-index: 0; }
+.tn:last-child::after { display: none; }
+.tn.done::after { background: var(--green); }
+.tball {
+  width: 19px; height: 19px; border-radius: 50%;
+  background: var(--soft); border: 2px solid var(--rule);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.58rem; font-weight: 700; color: var(--grey); z-index: 1; position: relative;
+}
+.tn.active .tball { background: #c27b00; border-color: #c27b00; color: #fff; }
+.tn.done   .tball { background: var(--green); border-color: var(--green); color: #fff; font-size: 0; }
+.tn.done   .tball::after { content: '\2713'; font-size: 0.58rem; }
+.tlbl { font-size: 0.6rem; font-weight: 600; color: var(--grey); text-align: center; }
+.tn.active .tlbl { color: #c27b00; font-weight: 700; }
+.tn.done   .tlbl { color: var(--green); }
+
+/* Wrap */
+.wrap { max-width: 800px; margin: 0 auto; padding: 10px 12px 28px; }
+
+/* Cards */
+.card {
+  background: var(--paper); border: 1.5px solid var(--rule);
+  border-radius: 8px; padding: 11px 14px 9px; margin-bottom: 10px;
+  box-shadow: 2px 2px 0 var(--soft);
+}
+.card-head { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+.badge {
+  font-size: 0.6rem; font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase;
+  background: var(--ink); color: #f0ece4; padding: 2px 7px; border-radius: 3px;
+}
+.badge.am { background: #c27b00; }
+.ctitle   { font-family: Georgia, serif; font-size: 0.95rem; font-weight: 700; }
+.csub     { font-size: 0.78rem; color: var(--grey); line-height: 1.5; }
+.hint-box {
+  margin-top: 5px; padding: 5px 9px;
+  background: rgba(194,123,0,0.07); border: 1px solid rgba(194,123,0,0.2);
+  border-radius: 4px; font-size: 0.76rem; font-weight: 600; color: #8b5500;
+}
+
+/* Legend */
+.legend { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; padding: 5px 0 8px; font-size: 0.74rem; font-weight: 600; color: var(--grey); }
+.leg    { display: flex; align-items: center; gap: 5px; }
+.ldot   { width: 10px; height: 10px; border-radius: 50%; background: var(--dot); flex-shrink: 0; }
+.lcross { width: 10px; height: 10px; position: relative; flex-shrink: 0; }
+.lcross::before, .lcross::after { content: ''; position: absolute; width: 2px; height: 8px; background: var(--cross); border-radius: 1px; left: 4px; top: 1px; }
+.lcross::before { transform: rotate(45deg); }
+.lcross::after  { transform: rotate(-45deg); }
+.lzone  { width: 13px; height: 9px; border-radius: 5px; background: rgba(58,138,58,0.12); border: 1.5px dashed #3a8a3a; flex-shrink: 0; }
+
+/* Tray */
+.tray-sec { display: flex; gap: 9px; flex-wrap: wrap; padding: 6px 0 3px; }
+.tray-g   { background: var(--soft); border: 1.5px solid var(--rule); border-radius: 6px; padding: 7px 10px; display: flex; flex-direction: column; gap: 5px; }
+.tray-lbl { font-size: 0.65rem; font-weight: 800; letter-spacing: 0.8px; text-transform: uppercase; }
+.tray-lbl.dl { color: var(--dotd); }
+.tray-lbl.cl { color: var(--crossd); }
+.tray-row { display: flex; gap: 5px; flex-wrap: wrap; }
+.tok {
+  width: 20px; height: 20px; border-radius: 50%;
+  cursor: grab; flex-shrink: 0; touch-action: none; position: relative;
+  transition: transform 0.1s, opacity 0.2s; user-select: none; -webkit-user-select: none;
+}
+.tok:hover { transform: scale(1.3); }
+.tok.dt { background: var(--dot); box-shadow: 0 0 4px rgba(212,134,10,0.42); }
+.tok.ct { background: none; }
+.tok.ct::before, .tok.ct::after {
+  content: ''; position: absolute; width: 2px; height: 13px;
+  background: var(--cross); border-radius: 2px; left: 50%; top: 3px;
+}
+.tok.ct::before { transform: translateX(-50%) rotate(45deg); }
+.tok.ct::after  { transform: translateX(-50%) rotate(-45deg); }
+.tok.used { opacity: 0.13; pointer-events: none; transform: none; cursor: default; }
+
+/* Diagram */
+.diag-card {
+  background: var(--paper); border: 1.5px solid var(--rule);
+  border-radius: 8px; padding: 11px; margin-bottom: 10px;
+  box-shadow: 2px 2px 0 var(--soft);
+}
+.diag-top    { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 5px; margin-bottom: 8px; }
+.diag-title  { font-size: 0.6rem; font-weight: 800; letter-spacing: 3px; text-transform: uppercase; color: var(--grey); }
+.diag-hint   { font-size: 0.7rem; font-weight: 700; padding: 3px 8px; border-radius: 4px; background: rgba(194,123,0,0.07); color: #8b5500; border: 1px solid rgba(194,123,0,0.18); }
+.diag-hint.done { background: rgba(58,138,58,0.1); color: #1a5c35; border-color: rgba(58,138,58,0.26); }
+.diag-canvas { width: 100%; overflow-x: auto; display: flex; justify-content: center; }
+svg.dsvg     { display: block; overflow: visible; max-width: 100%; }
+.dz { cursor: pointer; }
+.dz.hov    { filter: drop-shadow(0 0 6px rgba(58,138,58,0.75)); }
+.dz.lp.hov { filter: drop-shadow(0 0 6px rgba(45,95,181,0.7)); }
+
+/* Feedback */
+.fb          { border-radius: 6px; padding: 9px 13px; font-size: 0.82rem; font-weight: 600; line-height: 1.5; display: none; margin-bottom: 9px; border: 1.5px solid transparent; }
+.fb.show     { display: block; }
+.fb.ok  { background: #edfbf2; border-color: #a8e6be; color: #1a5c35; }
+.fb.bad { background: #fef0ee; border-color: #f2b0a8; color: #7a1a12; }
+.fb.mid { background: #fef8e8; border-color: #f0d878; color: #5a4200; }
+
+/* Score */
+.sc-row { display: flex; gap: 7px; flex-wrap: wrap; justify-content: center; padding: 3px 0 7px; }
+.sc     { font-size: 0.74rem; font-weight: 700; padding: 4px 11px; border-radius: 14px; background: var(--soft); border: 1.5px solid var(--rule); color: var(--grey); display: flex; align-items: center; gap: 4px; }
+.sc.ok  { background: #edfbf2; border-color: #a8e6be; color: #1a5c35; }
+.sc .sn { font-family: Georgia, serif; font-size: 0.93rem; font-weight: 700; }
+
+/* Buttons */
+.btn-row { display: flex; gap: 9px; justify-content: center; flex-wrap: wrap; padding: 5px 0; }
+.btn     { font-size: 0.82rem; font-weight: 700; padding: 9px 20px; border-radius: 6px; border: none; cursor: pointer; transition: all 0.15s; }
+.btn-ck  { background: var(--ink); color: #f0ece4; box-shadow: 3px 3px 0 #c27b00; }
+.btn-ck:hover     { transform: translate(-1px, -1px); box-shadow: 4px 4px 0 #c27b00; }
+.btn-ck:disabled  { opacity: 0.38; cursor: not-allowed; transform: none; }
+.btn-rs  { background: var(--soft); color: var(--grey); border: 1.5px solid var(--rule); }
+.btn-rs:hover { border-color: #888; color: var(--ink); }
+.btn-nx  { background: #c27b00; color: #fff; box-shadow: 3px 3px 0 #7a4d00; display: none; }
+.btn-nx:hover { transform: translate(-1px, -1px); box-shadow: 4px 4px 0 #7a4d00; }
+
+/* Result */
+.result       { display: none; text-align: center; padding: 24px 12px 32px; }
+.result.show  { display: block; }
+.r-title { font-family: Georgia, serif; font-size: 1.6rem; font-weight: 700; margin-bottom: 4px; }
+.r-score { font-family: Georgia, serif; font-size: 2.8rem; font-weight: 700; color: #c27b00; }
+.r-sub   { font-size: 0.84rem; color: var(--grey); margin-bottom: 14px; }
+.r-tbl   { background: var(--paper); border: 1.5px solid var(--rule); border-radius: 7px; max-width: 460px; margin: 0 auto 14px; text-align: left; }
+.rt-h { font-size: 0.6rem; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; padding: 7px 13px; background: var(--soft); border-bottom: 1.5px solid var(--rule); color: var(--grey); display: grid; grid-template-columns: 1fr 1fr 52px; }
+.rt-r { padding: 7px 13px; border-bottom: 1px solid var(--rule); font-size: 0.81rem; font-weight: 600; display: grid; grid-template-columns: 1fr 1fr 52px; align-items: center; }
+.rt-r:last-child { border-bottom: none; }
+.mf { color: var(--green); font-weight: 800; }
+.mp { color: var(--amber); font-weight: 800; }
+.mz { color: var(--red);   font-weight: 800; }
+
+/* Touch ghost */
+#ghost { position: fixed; width: 20px; height: 20px; border-radius: 50%; pointer-events: none; z-index: 9999; display: none; transform: translate(-50%, -50%); }
+#ghost.dg { background: var(--dot); box-shadow: 0 0 9px rgba(212,134,10,0.65); }
+#ghost.cg { background: none; }
+#ghost.cg::before, #ghost.cg::after { content: ''; position: absolute; width: 2.5px; height: 14px; background: var(--cross); border-radius: 2px; left: 50%; top: 3px; }
+#ghost.cg::before { transform: translateX(-50%) rotate(45deg); }
+#ghost.cg::after  { transform: translateX(-50%) rotate(-45deg); }
+</style>
+</head>
+<body>
+
+<div id="ghost"></div>
+
+<div class="hdr">
+  <h1>Covalent Bonding &#8212; <em>Dot &amp; Cross</em> Assessment</h1>
+  <p>Drag electrons into the shared zones to show electron sharing</p>
+</div>
+
+<div class="tabs"    id="tabBar"></div>
+<div class="tracker" id="tracker"></div>
+
+<div class="wrap">
+  <div class="legend">
+    <div class="leg"><div class="ldot"></div>  <span style="color:var(--dotd)">&#9679; Central atom electrons (dots)</span></div>
+    <div class="leg"><div class="lcross"></div> <span style="color:var(--crossd)">&#10005; Outer atom electrons (crosses)</span></div>
+    <div class="leg"><div class="lzone"></div>  <span style="color:#3a8a3a">Shared bond zone &#8212; drop here</span></div>
+  </div>
+
+  <div class="card" id="qCard">
+    <div class="card-head">
+      <span class="badge">TASK</span>
+      <span class="ctitle" id="qTitle"></span>
+    </div>
+    <div class="csub"     id="qSub"></div>
+    <div class="hint-box" id="qHint"></div>
+  </div>
+
+  <div class="card" id="trayCard">
+    <div class="card-head">
+      <span class="badge am">ELECTRON TRAY</span>
+      <span style="font-size:0.82rem;font-weight:700;">Drag electrons onto the diagram below</span>
+    </div>
+    <div class="tray-sec" id="traySec"></div>
+  </div>
+
+  <div class="diag-card" id="diagCard">
+    <div class="diag-top">
+      <span class="diag-title">Dot &amp; Cross Diagram</span>
+      <span class="diag-hint" id="diagHint">Drag electrons into the dashed zones</span>
+    </div>
+    <div class="diag-canvas" id="diagCanvas"></div>
+  </div>
+
+  <div class="fb"     id="fb"></div>
+  <div class="sc-row" id="scRow"></div>
+
+  <div class="btn-row">
+    <button class="btn btn-ck" id="btnChk" onclick="checkAns()">Check Answer</button>
+    <button class="btn btn-rs" onclick="resetNow()">&#8635; Try Again</button>
+    <button class="btn btn-nx" id="btnNx"  onclick="goNext()">Next &#8594;</button>
+  </div>
+
+  <div class="result" id="result">
+    <div style="font-size:2.6rem;margin-bottom:5px;">&#127942;</div>
+    <div class="r-title">Assessment Complete!</div>
+    <div class="r-score" id="rScore"></div>
+    <div class="r-sub">Total marks</div>
+    <div class="r-tbl"  id="rTbl"></div>
+    <button class="btn btn-ck" onclick="restartAll()" style="margin-top:7px;">&#8635; Start Again</button>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+
+  /* ── COMPOUND DATA ── */
+  var COMPOUNDS = [
+    {
+      key:'HCl', name:'HCl', full:'Hydrogen Chloride (HCl)',
+      desc:'H has 1 outer electron (dot). Cl has 7 outer electrons (crosses). They share 1 pair giving both a full outer shell. Cl has 3 remaining lone pairs.',
+      hint:'Step 1: drag 1 dot (H) + 1 cross (Cl) into the bond zone. Step 2: drag 2 crosses from Cl into each of the 3 lone-pair zones around Cl.',
+      dots:   [{id:'H',  lbl:'H  (Hydrogen)',    n:1}],
+      crosses:[{id:'Cl', lbl:'Cl (Chlorine)',     n:7}],
+      mb:2, ml:2
+    },
+    {
+      key:'NH3', name:'NH3', full:'Ammonia (NH3)',
+      desc:'N has 5 outer electrons (dots). Each H has 1 outer electron (cross). N shares 1 electron with each of the 3 H atoms making 3 N-H bonds. N keeps 1 lone pair.',
+      hint:'Drag 1 dot (N) + 1 cross (H) into each of the 3 N-H bond zones. Then drag 2 dots from N into the lone-pair zone above N.',
+      dots:   [{id:'N', lbl:'N  (Nitrogen)',      n:5}],
+      crosses:[{id:'H', lbl:'H  (Hydrogen) x3',   n:3}],
+      mb:3, ml:1
+    },
+    {
+      key:'C2H6', name:'C2H6', full:'Ethane (C2H6)',
+      desc:'C1 and C2 each have 4 outer electrons (dots). They share 1 pair for the C-C bond. Each C also forms 3 C-H bonds with H atoms (crosses).',
+      hint:'C-C bond: drag 1 dot from C1 AND 1 dot from C2 into the centre zone. Each C-H bond: 1 dot (C1 or C2) + 1 cross (H).',
+      dots:   [{id:'C1', lbl:'C1 (Carbon 1)', n:4}, {id:'C2', lbl:'C2 (Carbon 2)', n:4}],
+      crosses:[{id:'H',  lbl:'H  (Hydrogen) x6',   n:6}],
+      mb:7, ml:0
+    },
+    {
+      key:'C2H4', name:'C2H4', full:'Ethene (C2H4)',
+      desc:'C1 and C2 each have 4 outer electrons (dots). They share 2 pairs for the C=C double bond. Each C also forms 2 C-H bonds with H atoms (crosses).',
+      hint:'C=C double bond: drag 1 dot (C1) + 1 dot (C2) into EACH of the two C=C zones. Each C-H bond: 1 dot (C1 or C2) + 1 cross (H).',
+      dots:   [{id:'C1', lbl:'C1 (Carbon 1)', n:4}, {id:'C2', lbl:'C2 (Carbon 2)', n:4}],
+      crosses:[{id:'H',  lbl:'H  (Hydrogen) x4',   n:4}],
+      mb:6, ml:0
+    }
+  ];
+
+  /* ── STATE ── */
+  var ci     = 0;
+  var zones  = {};
+  var drag   = null;
+  var tdrag  = null;
+  var scores = COMPOUNDS.map(function(){ return {b:0,l:0}; });
+  var done   = COMPOUNDS.map(function(){ return false; });
+  var ghost  = document.getElementById('ghost');
+  var NS     = 'http://www.w3.org/2000/svg';
+
+  /* ── BOOT ── */
+  buildTabs();
+  buildTracker();
+  load(0);
+
+  /* ── TABS & TRACKER ── */
+  function buildTabs() {
+    var bar = document.getElementById('tabBar');
+    bar.innerHTML = '';
+    COMPOUNDS.forEach(function(c, i) {
+      var b = document.createElement('button');
+      b.className = 'tab' + (i===0 ? ' active' : '');
+      b.id = 'tab'+i;
+      b.textContent = c.name;
+      b.addEventListener('click', (function(idx){ return function(){ selTab(idx); }; })(i));
+      bar.appendChild(b);
+    });
+  }
+
+  function buildTracker() {
+    var t = document.getElementById('tracker');
+    t.innerHTML = '';
+    COMPOUNDS.forEach(function(c, i) {
+      var n = document.createElement('div');
+      n.className = 'tn'; n.id = 'tn'+i;
+      n.innerHTML = '<div class="tball">'+(i+1)+'</div><div class="tlbl">'+c.name+'</div>';
+      t.appendChild(n);
+    });
+    refreshTr();
+  }
+
+  function refreshTr() {
+    COMPOUNDS.forEach(function(_, i) {
+      var n = document.getElementById('tn'+i);
+      if (!n) return;
+      n.className = 'tn' + (done[i] ? ' done' : i===ci ? ' active' : '');
+    });
+  }
+
+  function selTab(i) {
+    ci = i;
+    document.querySelectorAll('.tab').forEach(function(b, j) {
+      b.className = 'tab' + (j===i ? ' active' : done[j] ? ' done' : '');
+    });
+    refreshTr();
+    load(i);
+  }
+
+  function updateTabs() {
+    document.querySelectorAll('.tab').forEach(function(b, i) {
+      b.className = 'tab' + (i===ci ? ' active' : done[i] ? ' done' : '');
+    });
+  }
+
+  /* ── LOAD ── */
+  function load(i) {
+    ci = i; zones = {}; drag = null; tdrag = null;
+    var C = COMPOUNDS[i];
+    document.getElementById('qTitle').textContent = C.full;
+    document.getElementById('qSub').textContent   = C.desc;
+    document.getElementById('qHint').textContent  = C.hint;
+    document.getElementById('fb').className       = 'fb';
+    document.getElementById('scRow').innerHTML    = '';
+    document.getElementById('btnNx').style.display = 'none';
+    document.getElementById('btnChk').disabled    = false;
+    resetHint();
+    buildTray(C);
+    buildDiag(C);
+  }
+
+  /* ── TRAY ── */
+  function buildTray(C) {
+    var sec = document.getElementById('traySec');
+    sec.innerHTML = '';
+    C.dots.forEach(function(d) {
+      var g = mkTG(d.lbl, 'dl');
+      var row = document.createElement('div'); row.className = 'tray-row';
+      for (var i=0; i<d.n; i++) { row.appendChild(mkTok('dot', d.id, i)); }
+      g.appendChild(row); sec.appendChild(g);
+    });
+    C.crosses.forEach(function(d) {
+      var g = mkTG(d.lbl, 'cl');
+      var row = document.createElement('div'); row.className = 'tray-row';
+      for (var i=0; i<d.n; i++) { row.appendChild(mkTok('cross', d.id, i)); }
+      g.appendChild(row); sec.appendChild(g);
+    });
+  }
+
+  function mkTG(lbl, cls) {
+    var g = document.createElement('div'); g.className = 'tray-g';
+    var l = document.createElement('div'); l.className = 'tray-lbl '+cls;
+    l.textContent = lbl; g.appendChild(l); return g;
+  }
+
+  function mkTok(type, atomId, idx) {
+    var e       = document.createElement('div');
+    var isCross = (type === 'cross');
+    /* C2 dots tagged 'dot2' so C-C zone can distinguish C1 vs C2 */
+    var dt = (!isCross && atomId === 'C2') ? 'dot2' : type;
+    e.className    = 'tok ' + (isCross ? 'ct' : 'dt');
+    e.dataset.dt   = dt;
+    e.dataset.atom = atomId;
+    e.dataset.idx  = idx;
+    e.draggable    = true;
+
+    e.addEventListener('dragstart', function(ev) {
+      if (e.classList.contains('used')) return;
+      drag = {type: dt, el: e};
+      ev.dataTransfer.effectAllowed = 'copy';
+      setTimeout(function(){ e.style.opacity = '0.3'; }, 0);
+    });
+    e.addEventListener('dragend', function() { e.style.opacity = ''; drag = null; });
+    e.addEventListener('touchstart', function(ev){ tStart(ev, e, dt); }, {passive:false});
+    e.addEventListener('touchmove',  tMove, {passive:false});
+    e.addEventListener('touchend',   tEnd,  {passive:false});
+    return e;
+  }
+
+  /* ── SVG HELPERS ── */
+  function se(tag, attrs, txt) {
+    var e = document.createElementNS(NS, tag);
+    for (var k in attrs) { e.setAttribute(k, attrs[k]); }
+    if (txt !== undefined) { e.textContent = txt; }
+    return e;
+  }
+  function mkCirc(cx, cy, r, fill, stroke, sw) {
+    return se('circle', {cx:cx, cy:cy, r:r, fill:fill, stroke:stroke, 'stroke-width': sw||1.8});
+  }
+  function atomC(svg, cx, cy, r, sym, fill, stroke, tc) {
+    svg.appendChild(mkCirc(cx, cy, r, fill, stroke, 2));
+    svg.appendChild(se('text', {
+      x:cx, y:cy,
+      'text-anchor':'middle', 'dominant-baseline':'central',
+      'font-family':'Segoe UI, Helvetica, Arial, sans-serif',
+      'font-weight':'700', 'font-style':'normal',
+      'font-size': r>50 ? 19 : r>35 ? 15 : 12,
+      fill: tc
+    }, sym));
+  }
+
+  /* ── ZONE BUILDER ── */
+  /* ztype: 'dc' = dot+cross bond  |  'cc' = C-C (dot+dot2)  |  'lp' = lone pair */
+  function mkZone(svg, cx, cy, w, h, zid, ztype) {
+    var isLP = (ztype === 'lp');
+    var isCC = (ztype === 'cc');
+    var sc   = isLP ? '#2d5fb5' : '#3a8a3a';
+    var fc   = isLP ? 'rgba(45,95,181,0.07)' : 'rgba(58,138,58,0.08)';
+
+    var g = document.createElementNS(NS, 'g');
+    g.setAttribute('id',    'z-'+zid);
+    g.setAttribute('class', 'dz' + (isLP ? ' lp' : ''));
+
+    g.appendChild(se('rect', {
+      x: cx-w/2, y: cy-h/2, width:w, height:h, rx:h/2,
+      fill:fc, stroke:sc, 'stroke-width':'1.5', 'stroke-dasharray':'4,3'
+    }));
+
+    var lbl = isLP ? 'lone pair' : isCC ? 'C-C bond' : 'bond';
+    g.appendChild(se('text', {
+      x:cx, y:cy+h/2+11, 'text-anchor':'middle',
+      'font-family':'Segoe UI, Helvetica, Arial, sans-serif',
+      'font-size':'8', 'font-weight':'600', fill:sc, opacity:'0.8'
+    }, lbl));
+
+    var cg = document.createElementNS(NS, 'g');
+    cg.setAttribute('id', 'zc-'+zid);
+    g.appendChild(cg);
+
+    var pad = 16;
+    var hit = se('rect', {
+      x: cx-w/2-pad, y: cy-h/2-pad,
+      width: w+pad*2, height: h+pad*2, rx: h/2+pad,
+      fill:'transparent', stroke:'none', cursor:'pointer'
+    });
+    hit.addEventListener('dragover',  function(ev){ ev.preventDefault(); g.classList.add('hov'); });
+    hit.addEventListener('dragleave', function(){ g.classList.remove('hov'); });
+    hit.addEventListener('drop',      function(ev){ ev.preventDefault(); g.classList.remove('hov'); dropZ(zid); });
+    g.appendChild(hit);
+
+    g.dataset.cx  = cx;
+    g.dataset.cy  = cy;
+    g.dataset.w   = w + pad*2;
+    g.dataset.h   = h + pad*2;
+    g.dataset.zid = zid;
+
+    svg.appendChild(g);
+
+    if (isLP)      { zones[zid] = {type:'lp', dots:0, nd:2, lpt:'dot'}; }
+    else if (isCC) { zones[zid] = {type:'cc', dots:0, crosses:0}; }
+    else           { zones[zid] = {type:'dc', dots:0, crosses:0}; }
+  }
+
+  /* ── LAYOUTS ── */
+  function buildDiag(C) {
+    var canvas = document.getElementById('diagCanvas');
+    canvas.innerHTML = '';
+    var svg = document.createElementNS(NS, 'svg');
+    svg.setAttribute('class', 'dsvg');
+    if      (C.key === 'HCl')  { layoutHCl(svg); }
+    else if (C.key === 'NH3')  { layoutNH3(svg); }
+    else if (C.key === 'C2H6') { layoutC2H6(svg); }
+    else if (C.key === 'C2H4') { layoutC2H4(svg); }
+    canvas.appendChild(svg);
+  }
+
+  function setSVG(svg, W, H) {
+    svg.setAttribute('viewBox', '0 0 '+W+' '+H);
+    svg.setAttribute('width',  W);
+    svg.setAttribute('height', H);
+  }
+
+  /* HCl */
+  function layoutHCl(svg) {
+    setSVG(svg, 660, 300);
+    var cy=150, hx=150, clx=490;
+    atomC(svg, hx,  cy, 55, 'H',  '#fff9ed','#c27b00','#8b5500');
+    atomC(svg, clx, cy, 82, 'Cl', '#edf3ff','#2d5fb5','#1a3d8a');
+    mkZone(svg, (hx+clx)/2, cy,       54, 42, 'hcl_b',   'dc');
+    mkZone(svg, clx, cy-106,           50, 28, 'hcl_lp1', 'lp'); zones['hcl_lp1'].lpt = 'cross';
+    mkZone(svg, clx, cy+106,           50, 28, 'hcl_lp2', 'lp'); zones['hcl_lp2'].lpt = 'cross';
+    mkZone(svg, clx+114, cy,           50, 28, 'hcl_lp3', 'lp'); zones['hcl_lp3'].lpt = 'cross';
+  }
+
+  /* NH3 — H at left(180deg), right(0deg), bottom(270deg); lone pair above N */
+  function layoutNH3(svg) {
+    setSVG(svg, 660, 430);
+    var cx=330, cy=215, nR=66, hR=44, bL=143;
+    atomC(svg, cx, cy, nR, 'N', '#fff9ed','#c27b00','#8b5500');
+    [180, 0, 270].forEach(function(a, i) {
+      var rad = a * Math.PI / 180;
+      var hx  = cx + Math.cos(rad)*bL;
+      var hy  = cy + Math.sin(rad)*bL;
+      atomC(svg, hx, hy, hR, 'H', '#edf3ff','#2d5fb5','#1a3d8a');
+      mkZone(svg, (cx+hx)/2, (cy+hy)/2, 52, 40, 'nh3_b'+(i+1), 'dc');
+    });
+    mkZone(svg, cx, cy-nR-46, 50, 28, 'nh3_lp', 'lp');
+    zones['nh3_lp'].lpt = 'dot';
+  }
+
+  /* C2H6 */
+  function layoutC2H6(svg) {
+    setSVG(svg, 780, 380);
+    var c1x=235, c2x=545, cy=190, cR=62, hR=37;
+    atomC(svg, c1x, cy, cR, 'C1', '#fff9ed','#c27b00','#8b5500');
+    atomC(svg, c2x, cy, cR, 'C2', '#edf3ff','#2d5fb5','#1a3d8a');
+    mkZone(svg, (c1x+c2x)/2, cy, 54, 40, 'c2h6_cc', 'cc');
+    [{x:c1x-125,y:cy-87},{x:c1x-142,y:cy},{x:c1x-125,y:cy+87}].forEach(function(p,i){
+      atomC(svg, p.x, p.y, hR, 'H', '#edf3ff','#2d5fb5','#1a3d8a');
+      mkZone(svg, (c1x+p.x)/2, (cy+p.y)/2, 48, 36, 'c2h6_h1'+(i+1), 'dc');
+    });
+    [{x:c2x+125,y:cy-87},{x:c2x+142,y:cy},{x:c2x+125,y:cy+87}].forEach(function(p,i){
+      atomC(svg, p.x, p.y, hR, 'H', '#edf3ff','#2d5fb5','#1a3d8a');
+      mkZone(svg, (c2x+p.x)/2, (cy+p.y)/2, 48, 36, 'c2h6_h2'+(i+1), 'dc');
+    });
+  }
+
+  /* C2H4 */
+  function layoutC2H4(svg) {
+    setSVG(svg, 780, 340);
+    var c1x=235, c2x=545, cy=170, cR=62, hR=37;
+    atomC(svg, c1x, cy, cR, 'C1', '#fff9ed','#c27b00','#8b5500');
+    atomC(svg, c2x, cy, cR, 'C2', '#edf3ff','#2d5fb5','#1a3d8a');
+    mkZone(svg, (c1x+c2x)/2, cy-20, 54, 36, 'c2h4_cc1', 'cc');
+    mkZone(svg, (c1x+c2x)/2, cy+20, 54, 36, 'c2h4_cc2', 'cc');
+    [{x:c1x-120,y:cy-90},{x:c1x-120,y:cy+90}].forEach(function(p,i){
+      atomC(svg, p.x, p.y, hR, 'H', '#edf3ff','#2d5fb5','#1a3d8a');
+      mkZone(svg, (c1x+p.x)/2, (cy+p.y)/2, 48, 36, 'c2h4_h1'+(i+1), 'dc');
+    });
+    [{x:c2x+120,y:cy-90},{x:c2x+120,y:cy+90}].forEach(function(p,i){
+      atomC(svg, p.x, p.y, hR, 'H', '#edf3ff','#2d5fb5','#1a3d8a');
+      mkZone(svg, (c2x+p.x)/2, (cy+p.y)/2, 48, 36, 'c2h4_h2'+(i+1), 'dc');
+    });
+  }
+
+  /* ── DROP ── */
+  function dropZ(zid) {
+    if (!drag) return;
+    var z = zones[zid]; if (!z) return;
+    var dt = drag.type;
+
+    if (z.type === 'lp') {
+      if (z.lpt === 'dot'   && dt !== 'dot')  { flash('This lone pair needs dot electrons!',   'mid'); return; }
+      if (z.lpt === 'cross' && dt !== 'cross') { flash('Cl lone pairs need cross electrons!', 'mid'); return; }
+      if (z.dots >= z.nd) { flash('Lone pair zone is full (2 electrons)!', 'mid'); return; }
+      z.dots++;
+      markUsed(); renderZ(zid); checkDone(); return;
+    }
+
+    if (z.type === 'cc') {
+      if (dt === 'dot') {
+        if (z.dots >= 1) { flash('C1 already gave 1 electron to this bond!', 'mid'); return; }
+        z.dots++;
+      } else if (dt === 'dot2') {
+        if (z.crosses >= 1) { flash('C2 already gave 1 electron to this bond!', 'mid'); return; }
+        z.crosses++;
+      } else {
+        flash('The C-C bond needs 1 dot from C1 and 1 dot from C2 only.', 'mid'); return;
+      }
+      markUsed(); renderZ(zid); checkDone(); return;
+    }
+
+    if (dt === 'dot' || dt === 'dot2') {
+      if (z.dots >= 1) { flash('Zone already has a dot electron!', 'mid'); return; }
+      z.dots++;
+    } else {
+      if (z.crosses >= 1) { flash('Zone already has a cross electron!', 'mid'); return; }
+      z.crosses++;
+    }
+    markUsed(); renderZ(zid); checkDone();
+  }
+
+  function markUsed() { if (drag && drag.el) { drag.el.classList.add('used'); } }
+
+  /* ── RENDER ZONE ── */
+  function renderZ(zid) {
+    var cg = document.getElementById('zc-'+zid); if (!cg) return;
+    var z  = zones[zid];
+    var g  = document.getElementById('z-'+zid);
+    var cx = parseFloat(g.dataset.cx);
+    var cy = parseFloat(g.dataset.cy);
+    cg.innerHTML = '';
+
+    var items = [];
+    if (z.type === 'lp') {
+      for (var i=0; i<z.dots; i++) { items.push(z.lpt); }
+    } else if (z.type === 'cc') {
+      /* both carbons — render both as dots */
+      for (var i=0; i<z.dots;    i++) { items.push('dot'); }
+      for (var i=0; i<z.crosses; i++) { items.push('dot'); }
+    } else {
+      for (var i=0; i<z.dots;    i++) { items.push('dot'); }
+      for (var i=0; i<z.crosses; i++) { items.push('cross'); }
+    }
+
+    var n  = items.length;
+    var sp = 13;
+    var x0 = cx - (n-1)*sp/2;
+    items.forEach(function(t, i) {
+      var ex = x0 + i*sp;
+      if (t === 'dot') {
+        cg.appendChild(mkCirc(ex, cy, 5, '#d4860a', '#8b5500', 1));
+      } else {
+        var gg = document.createElementNS(NS, 'g');
+        gg.appendChild(se('line',{x1:ex-4,y1:cy-4,x2:ex+4,y2:cy+4,stroke:'#2d5fb5','stroke-width':'2.5','stroke-linecap':'round'}));
+        gg.appendChild(se('line',{x1:ex+4,y1:cy-4,x2:ex-4,y2:cy+4,stroke:'#2d5fb5','stroke-width':'2.5','stroke-linecap':'round'}));
+        cg.appendChild(gg);
+      }
+    });
+  }
+
+  /* ── HINT ── */
+  function checkDone() {
+    var total  = Object.keys(zones).length;
+    var filled = 0;
+    for (var zid in zones) {
+      var z = zones[zid];
+      if (z.type === 'lp') { if (z.dots >= z.nd) filled++; }
+      else                 { if (z.dots >= 1 && z.crosses >= 1) filled++; }
+    }
+    var rem = total - filled;
+    var h   = document.getElementById('diagHint');
+    if (rem === 0) {
+      h.textContent = 'All electrons placed! Click Check Answer.';
+      h.className   = 'diag-hint done';
+    } else {
+      h.textContent = rem + ' zone' + (rem>1?'s':'') + ' still need electrons';
+      h.className   = 'diag-hint';
+    }
+  }
+
+  function resetHint() {
+    var h = document.getElementById('diagHint');
+    h.textContent = 'Drag electrons into the dashed zones';
+    h.className   = 'diag-hint';
+  }
+
+  /* ── TOUCH ── */
+  function tStart(ev, el, dt) {
+    if (el.classList.contains('used')) return;
+    ev.preventDefault();
+    var t  = ev.touches[0];
+    tdrag  = {type:dt, el:el};
+    drag   = tdrag;
+    ghost.className     = (dt === 'cross') ? 'cg' : 'dg';
+    ghost.style.display = 'block';
+    ghost.style.left    = t.clientX + 'px';
+    ghost.style.top     = t.clientY + 'px';
+    el.style.opacity    = '0.3';
+  }
+  function tMove(ev) {
+    if (!tdrag) return;
+    ev.preventDefault();
+    var t   = ev.touches[0];
+    ghost.style.left = t.clientX + 'px';
+    ghost.style.top  = t.clientY + 'px';
+    var svg = document.querySelector('.dsvg');
+    if (!svg) return;
+    var br = svg.getBoundingClientRect();
+    var vb = svg.viewBox.baseVal;
+    var sx = vb.width / br.width, sy = vb.height / br.height;
+    var fx = (t.clientX - br.left)*sx, fy = (t.clientY - br.top)*sy;
+    document.querySelectorAll('.dz').forEach(function(g){
+      g.classList.toggle('hov', hitTest(g, fx, fy));
+    });
+  }
+  function tEnd(ev) {
+    if (!tdrag) return;
+    ev.preventDefault();
+    ghost.style.display    = 'none';
+    tdrag.el.style.opacity = '';
+    var t   = ev.changedTouches[0];
+    var svg = document.querySelector('.dsvg');
+    if (svg) {
+      var br = svg.getBoundingClientRect();
+      var vb = svg.viewBox.baseVal;
+      var sx = vb.width / br.width, sy = vb.height / br.height;
+      var fx = (t.clientX - br.left)*sx, fy = (t.clientY - br.top)*sy;
+      document.querySelectorAll('.dz').forEach(function(g){
+        g.classList.remove('hov');
+        if (hitTest(g, fx, fy)) { dropZ(g.dataset.zid); }
+      });
+    }
+    tdrag = null; drag = null;
+  }
+  function hitTest(g, fx, fy) {
+    var cx = parseFloat(g.dataset.cx), cy = parseFloat(g.dataset.cy);
+    var hw = parseFloat(g.dataset.w)/2, hh = parseFloat(g.dataset.h)/2;
+    return fx>=cx-hw && fx<=cx+hw && fy>=cy-hh && fy<=cy+hh;
+  }
+
+  /* ── CHECK ANSWER ── */
+  function checkAns() {
+    var C = COMPOUNDS[ci];
+    var bzones=[], lpzones=[];
+    for (var zid in zones) {
+      var z = zones[zid];
+      if (z.type === 'lp') { lpzones.push(z); } else { bzones.push(z); }
+    }
+    var okB    = bzones.filter(function(z){ return z.dots>=1 && z.crosses>=1; }).length;
+    var bScore = bzones.length>0 ? Math.round((okB/bzones.length)*C.mb) : 0;
+    var lScore = 0;
+    if (lpzones.length > 0) {
+      var okL = lpzones.filter(function(z){ return z.dots>=z.nd; }).length;
+      lScore  = (okL===lpzones.length) ? C.ml : (okL>0 ? Math.floor(C.ml/2) : 0);
+    }
+    scores[ci] = {b:bScore, l:lScore};
+    var total = bScore+lScore, max = C.mb+C.ml;
+    var cls, msg;
+    if (total === max) {
+      cls = 'ok';
+      msg = 'Excellent! All '+okB+' bond'+(okB>1?'s':'')+' correctly drawn.'+
+            (lpzones.length>0 ? ' Lone pairs correct too.' : '')+' Full marks! ('+total+'/'+max+')';
+      done[ci] = true;
+      document.querySelectorAll('.dz').forEach(function(g){ g.style.pointerEvents='none'; });
+      document.getElementById('btnChk').disabled = true;
+      document.getElementById('btnNx').style.display = 'inline-block';
+    } else if (total > 0) {
+      cls = 'mid';
+      msg = 'Partially correct ('+total+'/'+max+'). ';
+      if (bScore < C.mb) { msg += okB+'/'+bzones.length+' bond zones complete. Each zone needs 1 dot AND 1 cross (or 1 dot from each carbon for C-C bonds). '; }
+      if (lpzones.length>0 && lScore<C.ml) {
+        msg += (C.key==='HCl' ? 'Cl lone pairs need cross electrons. ' : 'N lone pair needs 2 dot electrons. ');
+      }
+      msg += 'Try again!';
+    } else {
+      cls = 'bad';
+      msg = 'No zones complete yet. Drag one electron from each atom into the shared bond zone between them.';
+    }
+    var fb = document.getElementById('fb');
+    fb.className = 'fb show '+cls; fb.textContent = msg;
+
+    var chips = [{l:'Bond Zones', s:bScore, m:C.mb}];
+    if (lpzones.length>0) { chips.push({l:'Lone Pairs', s:lScore, m:C.ml}); }
+    chips.push({l:'Total', s:total, m:max});
+    var row = document.getElementById('scRow'); row.innerHTML='';
+    chips.forEach(function(c){
+      var d = document.createElement('div');
+      d.className = 'sc'+(c.s>0?' ok':'');
+      d.innerHTML = '<span class="sn">'+c.s+'/'+c.m+'</span>'+c.l;
+      row.appendChild(d);
+    });
+    refreshTr(); updateTabs();
+    if (done.every(function(d){ return d; })) { setTimeout(showResult, 750); }
+  }
+
+  /* ── NAV ── */
+  function goNext() {
+    var next = -1;
+    for (var i=0; i<COMPOUNDS.length; i++) { if (!done[i]){ next=i; break; } }
+    if (next>=0) { selTab(next); } else { showResult(); }
+  }
+
+  function resetNow() {
+    scores[ci]={b:0,l:0}; done[ci]=false;
+    document.getElementById('fb').className       = 'fb';
+    document.getElementById('scRow').innerHTML    = '';
+    document.getElementById('btnNx').style.display = 'none';
+    document.getElementById('btnChk').disabled    = false;
+    updateTabs(); refreshTr(); load(ci);
+  }
+
+  function restartAll() {
+    scores = COMPOUNDS.map(function(){ return {b:0,l:0}; });
+    done   = COMPOUNDS.map(function(){ return false; });
+    document.getElementById('result').className = 'result';
+    ['qCard','trayCard','diagCard','fb','scRow'].forEach(function(id){
+      var el=document.getElementById(id); if(el){el.style.display='';}
+    });
+    document.querySelector('.legend').style.display  = '';
+    document.querySelector('.btn-row').style.display = '';
+    selTab(0);
+  }
+
+  /* ── RESULT ── */
+  function showResult() {
+    var total = scores.reduce(function(a,s){ return a+s.b+s.l; }, 0);
+    var max   = COMPOUNDS.reduce(function(a,c){ return a+c.mb+c.ml; }, 0);
+    document.getElementById('rScore').textContent = total+'/'+max;
+    var tbl = document.getElementById('rTbl');
+    tbl.innerHTML = '<div class="rt-h"><span>Compound</span><span>Criterion</span><span>Score</span></div>';
+    COMPOUNDS.forEach(function(C, i){
+      var s=scores[i], b=s.b, l=s.l, bm=C.mb, lm=C.ml;
+      tbl.innerHTML += '<div class="rt-r"><span>'+C.name+'</span><span>Bond zones</span><span class="'+(b===bm?'mf':b>0?'mp':'mz')+'">'+b+'/'+bm+'</span></div>';
+      if (lm>0) { tbl.innerHTML += '<div class="rt-r"><span></span><span>Lone pairs</span><span class="'+(l===lm?'mf':l>0?'mp':'mz')+'">'+l+'/'+lm+'</span></div>'; }
+    });
+    ['qCard','trayCard','diagCard'].forEach(function(id){ document.getElementById(id).style.display='none'; });
+    document.querySelector('.legend').style.display  = 'none';
+    document.querySelector('.btn-row').style.display = 'none';
+    document.getElementById('result').className = 'result show';
+  }
+
+  /* ── FLASH ── */
+  function flash(msg, cls) {
+    var fb = document.getElementById('fb');
+    fb.className = 'fb show '+cls; fb.textContent = msg;
+    setTimeout(function(){ if(fb.textContent===msg){fb.className='fb';} }, 2200);
+  }
+
+}); /* end DOMContentLoaded */
+</script>
+</body>
+</html>
